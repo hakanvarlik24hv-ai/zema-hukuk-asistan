@@ -3,7 +3,7 @@ import { createServer as createViteServer } from "vite";
 import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const db = new Database("hukuk.db");
-const ai = new GoogleGenAI(process.env.GEMINI_API_KEY || "");
+const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 // Initialize Database
 db.exec(`
@@ -179,15 +179,15 @@ async function startServer() {
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        
+
         if (text) return text;
       } catch (err: any) {
         lastError = err;
         console.error(`AI Error with ${modelName}:`, err.message || err);
         if (err.message?.includes("429") || err.message?.includes("quota")) {
-           continue; 
+          continue;
         }
-        throw err; 
+        throw err;
       }
     }
     throw lastError;
