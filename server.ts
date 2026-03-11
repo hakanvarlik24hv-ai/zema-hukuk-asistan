@@ -174,7 +174,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
     let lastError: any = null;
 
     for (const modelName of models) {
@@ -183,11 +183,15 @@ async function startServer() {
         if (isJson) generationConfig.responseMimeType = "application/json";
 
         const model = ai.getGenerativeModel({ model: modelName, generationConfig });
+        console.log(`[AI] Attempting generation with model: ${modelName}`);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
-        if (text) return text;
+        if (text) {
+          console.log(`[AI] Success with model: ${modelName}`);
+          return text;
+        }
       } catch (err: any) {
         lastError = err;
         console.error(`AI Error with ${modelName}:`, err.message || err);
