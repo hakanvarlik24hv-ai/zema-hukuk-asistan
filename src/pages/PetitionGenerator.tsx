@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Send, Download, Copy, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { FileText, Send, Download, Copy, Loader2, Sparkles, AlertCircle, Check } from 'lucide-react';
 import { generatePetition } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 
 export default function PetitionGenerator() {
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -28,6 +32,49 @@ export default function PetitionGenerator() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopy = () => {
+    if (!result) return;
+    navigator.clipboard.writeText(result);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadPDF = () => {
+    const element = document.getElementById("petition-content");
+    if (!element) return;
+    const opt = {
+      margin: 15,
+      filename: 'dilekce.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
+  const handleDownloadWord = () => {
+    const element = document.getElementById("petition-content");
+    if (!element) return;
+
+    // Minimal valid HTML structure with charset for tr characters
+    const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Dilekce</title></head><body>";
+    const postHtml = "</body></html>";
+    const html = preHtml + element.innerHTML + postHtml;
+
+    // Create a Blob with the file content
+    const blob = new Blob(['\ufeff', html], {
+      type: 'application/msword;charset=utf-8'
+    });
+
+    // Create a link to download it
+    const downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = 'dilekce.doc';
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   return (
@@ -131,11 +178,17 @@ export default function PetitionGenerator() {
               </h3>
               {result && (
                 <div className="flex gap-2">
-                  <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" title="Kopyala">
-                    <Copy size={18} />
+                  <button onClick={handleCopy} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="Kopyala">
+                    {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+                    <span className="hidden sm:inline">{copied ? 'Kopyalandı' : 'Kopyala'}</span>
                   </button>
-                  <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" title="PDF İndir">
-                    <Download size={18} />
+                  <button onClick={handleDownloadWord} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="Word Olarak İndir">
+                    <Download size={16} />
+                    <span className="hidden sm:inline">Word İndir</span>
+                  </button>
+                  <button onClick={handleDownloadPDF} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="PDF Olarak İndir">
+                    <Download size={16} />
+                    <span className="hidden sm:inline">PDF İndir</span>
                   </button>
                 </div>
               )}
@@ -147,7 +200,7 @@ export default function PetitionGenerator() {
                   <p className="text-sm">Dilekçeniz hazırlanıyor, lütfen bekleyin...</p>
                 </div>
               ) : result ? (
-                <div className="markdown-body">
+                <div id="petition-content" className="markdown-body text-slate-800">
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
               ) : error ? (

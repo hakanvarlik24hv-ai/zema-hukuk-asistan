@@ -1,15 +1,12 @@
-import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv";
-dotenv.config();
+const apiKey = "AIzaSyBmBWTon6_dk8PUS-ZmFQyk2rdb2qr5AL4";
 
-async function listModels() {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    try {
-        const models = await ai.models.listModels();
-        console.log(JSON.stringify(models, null, 2));
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-listModels();
+fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.models) {
+            console.log(data.models.map(m => m.name).join(', '));
+        } else {
+            console.log(data);
+        }
+    })
+    .catch(console.error);
