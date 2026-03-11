@@ -92,12 +92,14 @@ async function startServer() {
   const app = express();
   const PORT = Number(process.env.PORT) || 3000;
 
-  // Configure CORS
-  app.use(cors({
-    origin: "*", // For development, allow all. You can restrict this to web.app later.
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-  }));
+  // Logger middleware
+  app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+  });
+
+  // Configure CORS - Extremely permissive for debugging
+  app.use(cors());
 
   app.use(express.json());
 

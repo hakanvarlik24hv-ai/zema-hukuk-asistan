@@ -6,19 +6,27 @@ export const generatePetition = async (data: {
   summary: string;
   documentType: string;
 }) => {
-  const response = await fetch(`${API_BASE_URL}/api/ai/petition`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/ai/petition`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Dilekçe oluşturulurken bir hata oluştu.");
+    if (!response.ok) {
+      const errorJson = await response.json().catch(() => ({ error: "Sunucu hatası (veya JSON dönmedi)." }));
+      throw new Error(errorJson.error || `HTTP Hata: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.text;
+  } catch (err: any) {
+    console.error("Fetch Exception:", err);
+    if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+      throw new Error("Sunucuya bağlanılamadı (CORS veya network hatası). Lütfen backend çalışanından emin olun.");
+    }
+    throw err;
   }
-
-  const result = await response.json();
-  return result.text;
 };
 
 export const analyzeCaseFile = async (content: string) => {
