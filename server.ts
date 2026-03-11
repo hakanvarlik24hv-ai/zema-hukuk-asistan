@@ -169,7 +169,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-pro", "gemini-flash-latest"];
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
     let lastError: any = null;
 
     for (const modelName of models) {
@@ -192,6 +192,7 @@ async function startServer() {
         throw err;
       }
     }
+    console.error("All AI models failed. Last error:", lastError);
     throw lastError;
   };
 
@@ -202,7 +203,8 @@ async function startServer() {
       const text = await callAI(prompt);
       res.json({ text });
     } catch (err: any) {
-      const msg = err.message?.includes("429") ? "API Kullanım limiti doldu. Lütfen 1 dakika bekleyin." : "Yapay zeka yanıt vermedi.";
+      console.error("AI Petition Error:", err);
+      const msg = err.message?.includes("429") ? "API Kullanım limiti doldu. Lütfen 1 dakika bekleyin." : `Yapay zeka yanıt vermedi. (Detay: ${err.message || 'Bilinmeyen hata'})`;
       res.status(500).json({ error: msg });
     }
   });
@@ -214,7 +216,8 @@ async function startServer() {
       const text = await callAI(prompt, true);
       res.json(JSON.parse(text));
     } catch (err: any) {
-      res.status(500).json({ error: "Analiz hatası." });
+      console.error("AI Analyze Error:", err);
+      res.status(500).json({ error: `Analiz hatası: ${err.message}` });
     }
   });
 
@@ -225,7 +228,8 @@ async function startServer() {
       const text = await callAI(prompt, true);
       res.json(JSON.parse(text));
     } catch (err: any) {
-      res.status(500).json({ error: "Arama hatası." });
+      console.error("AI Precedents Error:", err);
+      res.status(500).json({ error: `Arama hatası: ${err.message}` });
     }
   });
 
@@ -236,7 +240,8 @@ async function startServer() {
       const text = await callAI(prompt);
       res.json({ text });
     } catch (err: any) {
-      res.status(500).json({ error: "Sözleşme hatası." });
+      console.error("AI Contract Error:", err);
+      res.status(500).json({ error: `Sözleşme hatası: ${err.message}` });
     }
   });
 
