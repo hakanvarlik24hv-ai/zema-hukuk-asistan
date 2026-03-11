@@ -78,14 +78,19 @@ db.exec(`
 `);
 
 // Seed initial user
-const seedUser = db.prepare("SELECT * FROM users WHERE email = ?").get("admin@hukukasistan.com");
+const adminEmail = "admin@hukukasistan.com";
+const adminPass = "zema2024";
+const seedUser = db.prepare("SELECT * FROM users WHERE email = ?").get(adminEmail);
 if (!seedUser) {
   db.prepare("INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)").run(
-    "admin@hukukasistan.com",
-    "zema2024",
+    adminEmail,
+    adminPass,
     "Av. Ahmet Yılmaz",
     "lawyer"
   );
+} else {
+  // Always ensure the password is what App.tsx expects if it already exists
+  db.prepare("UPDATE users SET password = ? WHERE email = ?").run(adminPass, adminEmail);
 }
 
 async function startServer() {
