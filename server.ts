@@ -141,7 +141,8 @@ async function startServer() {
       status: "ok",
       database: "connected",
       ai_configured: !!process.env.GEMINI_API_KEY,
-      node_env: process.env.NODE_ENV || "unknown"
+      node_env: process.env.NODE_ENV || "unknown",
+      version: "1.0.4 - Optimized Models"
     });
   });
 
@@ -174,7 +175,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"];
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro"];
     let lastError: any = null;
 
     for (const modelName of models) {
