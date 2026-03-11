@@ -13,9 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const db = new Database("hukuk.db");
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || ""
-});
+const ai = new GoogleGenAI(process.env.GEMINI_API_KEY || "");
 
 // Initialize Database
 db.exec(`
@@ -174,23 +172,22 @@ async function startServer() {
 
     for (const modelName of models) {
       try {
-        const config: any = {};
-        if (isJson) config.responseMimeType = "application/json";
+        const generationConfig: any = {};
+        if (isJson) generationConfig.responseMimeType = "application/json";
 
-        const response = await ai.models.generateContent({
-          model: modelName,
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          config
-        });
-
-        if (response && response.text) return response.text;
+        const model = ai.getGenerativeModel({ model: modelName, generationConfig });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+        
+        if (text) return text;
       } catch (err: any) {
         lastError = err;
-        console.error(`AI Error with ${modelName}:`, err.message);
+        console.error(`AI Error with ${modelName}:`, err.message || err);
         if (err.message?.includes("429") || err.message?.includes("quota")) {
-          continue;
+           continue; 
         }
-        throw err;
+        throw err; 
       }
     }
     throw lastError;
