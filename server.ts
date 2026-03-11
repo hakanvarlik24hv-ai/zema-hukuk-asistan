@@ -144,7 +144,7 @@ async function startServer() {
       database: "connected",
       ai_configured: !!process.env.GEMINI_API_KEY,
       node_env: process.env.NODE_ENV || "unknown",
-      version: "1.0.4 - Optimized Models"
+      version: "1.0.5 - Experimental Models"
     });
   });
 
