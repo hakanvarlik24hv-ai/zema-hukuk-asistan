@@ -13,7 +13,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const db = new Database("hukuk.db");
-const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const aiKey = (process.env.GEMINI_API_KEY || "").trim();
+const ai = new GoogleGenerativeAI(aiKey);
+console.log(`[AI] Initialized with key starting with: ${aiKey.substring(0, 5)}... (Length: ${aiKey.length})`);
 
 // Initialize Database
 db.exec(`
@@ -175,7 +177,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-1.5-flash", "gemini-1.5-pro"];
+    const models = ["gemini-1.5-flash-latest", "gemini-1.5-pro-latest", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro"];
     let lastError: any = null;
 
     for (const modelName of models) {
