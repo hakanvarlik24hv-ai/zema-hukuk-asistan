@@ -169,97 +169,96 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const callAI = async (prompt: string, isJson: boolean = false) => {
-      const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro", "gemini-2.0-flash"];
-      let lastError: any = null;
+    const models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-pro", "gemini-2.0-flash"];
+    let lastError: any = null;
 
-      for (const modelName of models) {
-        try {
-          const generationConfig: any = {};
-          if (isJson) generationConfig.responseMimeType = "application/json";
+    for (const modelName of models) {
+      try {
+        const generationConfig: any = {};
+        if (isJson) generationConfig.responseMimeType = "application/json";
 
-          const model = ai.getGenerativeModel({ model: modelName, generationConfig });
-          const result = await model.generateContent(prompt);
-          const response = await result.response;
-          const text = response.text();
+        const model = ai.getGenerativeModel({ model: modelName, generationConfig });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
 
-          if (text) return text;
-        } catch (err: any) {
-          lastError = err;
-          console.error(`AI Error with ${modelName}:`, err.message || err);
-          if (err.message?.includes("429") || err.message?.includes("quota") || err.message?.includes("not found")) {
-            continue;
-          }
-          throw err;
+        if (text) return text;
+      } catch (err: any) {
+        lastError = err;
+        console.error(`AI Error with ${modelName}:`, err.message || err);
+        if (err.message?.includes("429") || err.message?.includes("quota") || err.message?.includes("not found")) {
+          continue;
         }
+        throw err;
       }
-      throw lastError;
-    };
-
-    app.post("/api/ai/petition", requireAuth, async (req, res) => {
-      const { caseType, parties, summary, documentType } = req.body;
-      const prompt = `Türkiye hukuk sistemine uygun bir ${documentType} oluştur. Dava Türü: ${caseType}. Taraf Bilgileri: ${parties}. Olay Özeti: ${summary}. Profesyonel avukat diliyle hazırlayın.`;
-      try {
-        const text = await callAI(prompt);
-        res.json({ text });
-      } catch (err: any) {
-        const msg = err.message?.includes("429") ? "API Kullanım limiti doldu. Lütfen 1 dakika bekleyin." : "Yapay zeka yanıt vermedi.";
-        res.status(500).json({ error: msg });
-      }
-    });
-
-    app.post("/api/ai/analyze", requireAuth, async (req, res) => {
-      const { content } = req.body;
-      const prompt = `Aşağıdaki metni analiz et: ${content}. JSON: { "missingPoints": [], "risks": [], "suggestions": [], "laws": [] }`;
-      try {
-        const text = await callAI(prompt, true);
-        res.json(JSON.parse(text));
-      } catch (err: any) {
-        res.status(500).json({ error: "Analiz hatası." });
-      }
-    });
-
-    app.post("/api/ai/precedents", requireAuth, async (req, res) => {
-      const { query } = req.body;
-      const prompt = `"${query}" konusuyla ilgili emsal kararlar. JSON [{ "court": "", "number": "", "summary": "", "principle": "" }]`;
-      try {
-        const text = await callAI(prompt, true);
-        res.json(JSON.parse(text));
-      } catch (err: any) {
-        res.status(500).json({ error: "Arama hatası." });
-      }
-    });
-
-    app.post("/api/ai/contract", requireAuth, async (req, res) => {
-      const { contractType, details } = req.body;
-      const prompt = `${contractType} oluştur. Detaylar: ${details}. Tam metin.`;
-      try {
-        const text = await callAI(prompt);
-        res.json({ text });
-      } catch (err: any) {
-        res.status(500).json({ error: "Sözleşme hatası." });
-      }
-    });
-
-    // Handle errors and non-matches for API
-    app.use("/api/*", (req, res) => {
-      res.status(404).json({ error: "API Route Not Found" });
-    });
-
-    if (process.env.NODE_ENV !== "production") {
-      const vite = await createViteServer({ server: { middlewareMode: true }, appType: "spa" });
-      app.use(vite.middlewares);
-    } else {
-      // Only serve static files if NOT on Railway (where we only want API)
-      // Or if Railway IS supposed to serve the frontend. 
-      // Given the user is using Firebase, we probably don't need this on Railway.
-      app.use(express.static(path.join(__dirname, "dist")));
-      app.get("*", (req, res) => res.sendFile(path.join(__dirname, "dist", "index.html")));
     }
+    throw lastError;
+  };
 
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
+  app.post("/api/ai/petition", requireAuth, async (req, res) => {
+    const { caseType, parties, summary, documentType } = req.body;
+    const prompt = `Türkiye hukuk sistemine uygun bir ${documentType} oluştur. Dava Türü: ${caseType}. Taraf Bilgileri: ${parties}. Olay Özeti: ${summary}. Profesyonel avukat diliyle hazırlayın.`;
+    try {
+      const text = await callAI(prompt);
+      res.json({ text });
+    } catch (err: any) {
+      const msg = err.message?.includes("429") ? "API Kullanım limiti doldu. Lütfen 1 dakika bekleyin." : "Yapay zeka yanıt vermedi.";
+      res.status(500).json({ error: msg });
+    }
+  });
+
+  app.post("/api/ai/analyze", requireAuth, async (req, res) => {
+    const { content } = req.body;
+    const prompt = `Aşağıdaki metni analiz et: ${content}. JSON: { "missingPoints": [], "risks": [], "suggestions": [], "laws": [] }`;
+    try {
+      const text = await callAI(prompt, true);
+      res.json(JSON.parse(text));
+    } catch (err: any) {
+      res.status(500).json({ error: "Analiz hatası." });
+    }
+  });
+
+  app.post("/api/ai/precedents", requireAuth, async (req, res) => {
+    const { query } = req.body;
+    const prompt = `"${query}" konusuyla ilgili emsal kararlar. JSON [{ "court": "", "number": "", "summary": "", "principle": "" }]`;
+    try {
+      const text = await callAI(prompt, true);
+      res.json(JSON.parse(text));
+    } catch (err: any) {
+      res.status(500).json({ error: "Arama hatası." });
+    }
+  });
+
+  app.post("/api/ai/contract", requireAuth, async (req, res) => {
+    const { contractType, details } = req.body;
+    const prompt = `${contractType} oluştur. Detaylar: ${details}. Tam metin.`;
+    try {
+      const text = await callAI(prompt);
+      res.json({ text });
+    } catch (err: any) {
+      res.status(500).json({ error: "Sözleşme hatası." });
+    }
+  });
+
+  // Handle errors and non-matches for API
+  app.use("/api/*", (req, res) => {
+    res.status(404).json({ error: "API Route Not Found" });
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({ server: { middlewareMode: true }, appType: "spa" });
+    app.use(vite.middlewares);
+  } else {
+    // Only serve static files if NOT on Railway (where we only want API)
+    // Or if Railway IS supposed to serve the frontend. 
+    // Given the user is using Firebase, we probably don't need this on Railway.
+    app.use(express.static(path.join(__dirname, "dist")));
+    app.get("*", (req, res) => res.sendFile(path.join(__dirname, "dist", "index.html")));
   }
 
-  startServer();
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
