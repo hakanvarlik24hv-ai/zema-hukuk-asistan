@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "zema-hukuk"
+  },
+  "targets": {
+    "zema-hukuk": {
+      "hosting": {
+        "zema-yonetim-75211": [
+          "zema-yonetim-75211"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
