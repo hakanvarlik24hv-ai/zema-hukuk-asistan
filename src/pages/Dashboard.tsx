@@ -43,18 +43,21 @@ export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [hearings, setHearings] = useState<Hearing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [statsRes, hearingsRes] = await Promise.all([
+        const [statsRes, hearingsRes, notificationsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/dashboard`),
-          fetch(`${API_BASE_URL}/api/hearings`)
+          fetch(`${API_BASE_URL}/api/hearings`),
+          fetch(`${API_BASE_URL}/api/notifications`)
         ]);
 
         if (statsRes.ok) setStats(await statsRes.json());
         if (hearingsRes.ok) setHearings(await hearingsRes.json());
+        if (notificationsRes.ok) setNotifications(await notificationsRes.json());
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       } finally {
@@ -96,32 +99,36 @@ export default function Dashboard() {
       className="space-y-6 lg:space-y-10"
     >
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-none">Hoş Geldiniz Yönetici</h1>
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <div className="flex-1">
+          <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">Hoş Geldiniz Yönetici</h1>
           <p className="text-white/80 font-bold mt-2 text-sm lg:text-base">Bugün bekleyen duruşmalarınız ve dilekçeleriniz var.</p>
         </div>
-        <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-sm self-start md:self-auto">
-          <div className="text-right">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
-              {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </p>
-            <p className="text-sm font-black text-slate-900 leading-none">
-              {new Date().toLocaleDateString('tr-TR', { weekday: 'long' })}
-            </p>
+        
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-sm">
+            <div className="text-right">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+                {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+              <p className="text-sm font-black text-slate-900 leading-none">
+                {new Date().toLocaleDateString('tr-TR', { weekday: 'long' })}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-logo-gold/10 rounded-xl flex items-center justify-center text-logo-gold">
+              <Calendar size={20} />
+            </div>
           </div>
-          <div className="w-10 h-10 bg-logo-gold/10 rounded-xl flex items-center justify-center text-logo-gold">
-            <Calendar size={20} />
-          </div>
+          
+          <button 
+            onClick={handleResetData}
+            disabled={resetLoading}
+            className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-6 py-3.5 rounded-2xl shadow-lg shadow-rose-500/20 transition-all font-black text-sm active:scale-95 disabled:opacity-50 group border-b-4 border-rose-700 active:border-b-0 active:translate-y-1"
+          >
+            <RefreshCw size={18} className={cn(resetLoading && "animate-spin")} />
+            {resetLoading ? 'Sıfırlanıyor...' : 'Tüm Verileri Sıfırla'}
+          </button>
         </div>
-        <button 
-          onClick={handleResetData}
-          disabled={resetLoading}
-          className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 px-4 py-3 rounded-2xl border border-rose-500/20 transition-all font-black text-xs active:scale-95 disabled:opacity-50 group"
-        >
-          <RefreshCw size={16} className={cn(resetLoading && "animate-spin")} />
-          {resetLoading ? 'Sıfırlanıyor...' : 'Sistemi Sıfırla'}
-        </button>
       </div>
 
       {/* Stats Grid */}

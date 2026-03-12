@@ -61,24 +61,31 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Auto-login with default password if no session
-        const loginRes = await fetch(`${API_BASE_URL}/api/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: 'zema2024' })
-        });
+        const [loginRes, notificationsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: 'zema2024' })
+          }),
+          fetch(`${API_BASE_URL}/api/notifications`)
+        ]);
 
         if (loginRes.ok) {
           const data = await loginRes.json();
           setUser(data);
         }
+        if (notificationsRes.ok) {
+          setNotifications(await notificationsRes.json());
+        }
       } catch (e) {
-        console.error("Auth check failed:", e);
+        console.error("Initial data fetch failed:", e);
       } finally {
         setLoading(false);
       }
@@ -236,12 +243,61 @@ export default function App() {
               />
             </div>
 
-            <button
-              className="p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl relative transition-all active:scale-95"
-            >
-              <Bell size={20} />
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className={cn(
+                  "p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl relative transition-all active:scale-95",
+                  isNotificationsOpen && "bg-slate-100 text-logo-gold"
+                )}
+              >
+                <Bell size={20} />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {isNotificationsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-2 w-80 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-2xl z-[100] overflow-hidden"
+                  >
+                    <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                      <h3 className="font-black text-slate-900 text-sm">Bildirimler</h3>
+                      <span className="text-[10px] font-black bg-logo-gold/10 text-logo-gold px-2 py-1 rounded-full uppercase tracking-widest">
+                        {notifications.filter(n => !n.read).length} Yeni
+                      </span>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto p-2 no-scrollbar">
+                      {notifications.length > 0 ? (
+                        notifications.map((n) => (
+                          <div key={n.id} className="p-3 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group mb-1 border border-transparent hover:border-slate-100">
+                            <h4 className="font-bold text-xs text-slate-900 group-hover:text-logo-gold transition-colors">{n.title}</h4>
+                            <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">{n.message}</p>
+                            <span className="text-[9px] text-slate-400 mt-2 block font-medium">
+                              {new Date(n.created_at).toLocaleDateString('tr-TR')}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="py-12 text-center">
+                          <Bell size={32} className="mx-auto text-slate-200 mb-3" />
+                          <p className="text-xs text-slate-400 font-bold italic">Yeni bildirim bulunmuyor.</p>
+                        </div>
+                      )}
+                    </div>
+                    {notifications.length > 0 && (
+                      <button className="w-full py-3 bg-slate-50 border-t border-slate-100 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:bg-slate-100 transition-colors">
+                        Tümünü Okundu İşaretle
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
 

@@ -166,6 +166,15 @@ async function startServer() {
     });
   });
 
+  app.get("/api/notifications", requireAuth, (req, res) => {
+    res.json(db.prepare("SELECT * FROM notifications ORDER BY created_at DESC").all());
+  });
+
+  app.post("/api/notifications/read-all", requireAuth, (req, res) => {
+    db.prepare("UPDATE notifications SET read = 1 WHERE user_id = ?").run(currentUser.id);
+    res.json({ success: true });
+  });
+
   app.get("/api/dashboard", requireAuth, (req, res) => {
     const stats = {
       activeCases: db.prepare("SELECT COUNT(*) as count FROM cases WHERE status = 'Aktif'").get().count,
