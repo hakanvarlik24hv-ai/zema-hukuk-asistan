@@ -181,6 +181,7 @@ async function startServer() {
       upcomingHearings: db.prepare("SELECT COUNT(*) as count FROM hearings WHERE hearing_date > datetime('now')").get().count,
       totalClients: db.prepare("SELECT COUNT(*) as count FROM clients").get().count,
       pendingPayments: db.prepare("SELECT COUNT(*) as count FROM payments WHERE status = 'Bekliyor'").get().count,
+      totalPendingAmount: db.prepare("SELECT SUM(amount) as total FROM payments WHERE status = 'Bekliyor'").get().total || 0,
     };
 
     const stats = {
@@ -189,7 +190,7 @@ async function startServer() {
         activeCases: counts.activeCases > 0 ? "+2 bu ay" : "Dava yok",
         upcomingHearings: counts.upcomingHearings > 0 ? "Haftalık" : "Duruşma yok",
         totalClients: counts.totalClients > 0 ? "+5 yeni" : "Müvekkil yok",
-        pendingPayments: counts.pendingPayments > 0 ? "₺12.500" : "Ödeme yok",
+        pendingPayments: counts.pendingPayments > 0 ? `₺${counts.totalPendingAmount.toLocaleString('tr-TR')}` : "Ödeme yok",
         directions: {
           activeCases: counts.activeCases > 0 ? 'up' : 'neutral',
           upcomingHearings: counts.upcomingHearings > 0 ? 'neutral' : 'neutral',
