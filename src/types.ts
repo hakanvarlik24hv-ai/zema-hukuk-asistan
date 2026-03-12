@@ -38,4 +38,16 @@ export interface DashboardStats {
   upcomingHearings: number;
   totalClients: number;
   pendingPayments: number;
+  trends: {
+    activeCases: string;
+    upcomingHearings: string;
+    totalClients: string;
+    pendingPayments: string;
+    directions: {
+      activeCases: 'up' | 'down' | 'neutral';
+      upcomingHearings: 'up' | 'down' | 'neutral';
+      totalClients: 'up' | 'down' | 'neutral';
+      pendingPayments: 'up' | 'down' | 'neutral';
+    };
+  };
 }

@@ -138,8 +138,8 @@ export default function Dashboard() {
           value={stats?.activeCases || 0}
           icon={Briefcase}
           color="bg-blue-500/10 text-blue-600"
-          trend="+2 bu ay"
-          trendDir="up"
+          trend={stats?.trends.activeCases || "Yok"}
+          trendDir={stats?.trends.directions.activeCases || "neutral"}
           to="/cases"
         />
         <StatCard
@@ -147,8 +147,8 @@ export default function Dashboard() {
           value={stats?.upcomingHearings || 0}
           icon={Activity}
           color="bg-amber-500/10 text-amber-600"
-          trend="Haftalık"
-          trendDir="neutral"
+          trend={stats?.trends.upcomingHearings || "Yok"}
+          trendDir={stats?.trends.directions.upcomingHearings || "neutral"}
           to="/calendar"
         />
         <StatCard
@@ -156,8 +156,8 @@ export default function Dashboard() {
           value={stats?.totalClients || 0}
           icon={Users}
           color="bg-emerald-500/10 text-emerald-600"
-          trend="+5 yeni"
-          trendDir="up"
+          trend={stats?.trends.totalClients || "Yeni Yok"}
+          trendDir={stats?.trends.directions.totalClients || "neutral"}
           to="/clients"
         />
         <StatCard
@@ -165,8 +165,8 @@ export default function Dashboard() {
           value={stats?.pendingPayments || 0}
           icon={CreditCard}
           color="bg-rose-500/10 text-rose-600"
-          trend="₺12.500"
-          trendDir="down"
+          trend={stats?.trends.pendingPayments || "Yok"}
+          trendDir={stats?.trends.directions.pendingPayments || "neutral"}
         />
       </div>
 
