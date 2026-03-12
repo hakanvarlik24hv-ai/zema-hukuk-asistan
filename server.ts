@@ -129,23 +129,9 @@ async function startServer() {
   app.use(express.json());
 
   const requireAuth = (req: any, res: any, next: any) => {
-    const authHeader = req.headers['authorization'];
-    
-    // Fallback for simple admin access during transition/dev
-    const defaultAdmin = db.prepare("SELECT * FROM users WHERE email = ?").get("yonetim@zemahukuk.com.tr");
-    
-    if (authHeader) {
-      // Expecting "Bearer <password>" for now, or similar token
-      const password = authHeader.replace('Bearer ', '');
-      const user = db.prepare("SELECT * FROM users WHERE password = ?").get(password);
-      if (user) {
-        req.user = user;
-        return next();
-      }
-    }
-
-    // If no header but we want to allow the default admin for now to prevent total breakage
-    req.user = defaultAdmin;
+    // We've removed the password screen, so we always fall back to the default admin 
+    // to ensure the system functions without explicit credentials.
+    req.user = db.prepare("SELECT * FROM users WHERE email = ?").get("yonetim@zemahukuk.com.tr");
     next();
   };
 

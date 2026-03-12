@@ -70,36 +70,25 @@ export default function App() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const savedPass = localStorage.getItem('zema_auth');
-      if (!savedPass) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const [loginRes, notificationsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: savedPass })
+            body: JSON.stringify({ password: 'zema2024' })
           }),
-          fetch(`${API_BASE_URL}/api/notifications`, {
-            headers: { 'Authorization': `Bearer ${savedPass}` }
-          })
+          fetch(`${API_BASE_URL}/api/notifications`)
         ]);
 
         if (loginRes.ok) {
           const data = await loginRes.json();
           setUser(data);
-        } else {
-          localStorage.removeItem('zema_auth');
         }
-        
         if (notificationsRes.ok) {
           setNotifications(await notificationsRes.json());
         }
       } catch (e) {
-        console.error("Auth check failed:", e);
+        console.error("Initial data fetch failed:", e);
       } finally {
         setLoading(false);
       }
@@ -119,12 +108,6 @@ export default function App() {
     </div>;
   }
 
-  if (!user && location.pathname !== '/login') {
-    return <Login onLogin={(pass) => {
-      localStorage.setItem('zema_auth', pass);
-      window.location.reload();
-    }} />;
-  }
 
   // Fallback user if login failed (to prevent blank screen in dev/offline)
   const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ\nAv. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
