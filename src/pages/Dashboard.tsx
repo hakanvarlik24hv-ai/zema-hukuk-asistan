@@ -101,7 +101,7 @@ export default function Dashboard() {
           color="bg-blue-500/10 text-blue-600"
           trend="+2 bu ay"
           trendDir="up"
-          onClick={() => navigate('/cases')}
+          to="/cases"
         />
         <StatCard
           label="Yaklaşan Duruşmalar"
@@ -110,7 +110,7 @@ export default function Dashboard() {
           color="bg-amber-500/10 text-amber-600"
           trend="Haftalık"
           trendDir="neutral"
-          onClick={() => navigate('/calendar')}
+          to="/calendar"
         />
         <StatCard
           label="Toplam Müvekkil"
@@ -119,7 +119,7 @@ export default function Dashboard() {
           color="bg-emerald-500/10 text-emerald-600"
           trend="+5 yeni"
           trendDir="up"
-          onClick={() => navigate('/clients')}
+          to="/clients"
         />
         <StatCard
           label="Bekleyen Ödemeler"
@@ -261,33 +261,49 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, icon: Icon, color, trend, trendDir, onClick }: any) {
+function StatCard({ label, value, icon: Icon, color, trend, trendDir, to, onClick }: any) {
+  const content = (
+    <div className="flex items-start justify-between">
+      <div className={cn("p-4 rounded-2xl transition-transform group-hover:rotate-6", color)}>
+        <Icon size={24} />
+      </div>
+      <div className={cn(
+        "flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full",
+        trendDir === 'up' ? "text-emerald-600 bg-emerald-50" :
+          trendDir === 'down' ? "text-rose-600 bg-rose-50" :
+            "text-slate-500 bg-slate-50"
+      )}>
+        {trendDir === 'up' && <ArrowUpRight size={10} />}
+        {trend}
+      </div>
+    </div>
+  );
+
+  const stats = (
+    <div className="mt-6">
+      <h3 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h3>
+      <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">{label}</p>
+    </div>
+  );
+
+  const className = cn(
+    "bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 shadow-lg shadow-slate-200/50 transition-all duration-300 group block",
+    (to || onClick) ? "hover:shadow-2xl hover:-translate-y-1 cursor-pointer" : ""
+  );
+
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {content}
+        {stats}
+      </Link>
+    );
+  }
+
   return (
-    <div 
-      onClick={onClick}
-      className={cn(
-        "bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 shadow-lg shadow-slate-200/50 transition-all duration-300 group",
-        onClick ? "hover:shadow-2xl hover:-translate-y-1 cursor-pointer" : ""
-      )}
-    >
-      <div className="flex items-start justify-between">
-        <div className={cn("p-4 rounded-2xl transition-transform group-hover:rotate-6", color)}>
-          <Icon size={24} />
-        </div>
-        <div className={cn(
-          "flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full",
-          trendDir === 'up' ? "text-emerald-600 bg-emerald-50" :
-            trendDir === 'down' ? "text-rose-600 bg-rose-50" :
-              "text-slate-500 bg-slate-50"
-        )}>
-          {trendDir === 'up' && <ArrowUpRight size={10} />}
-          {trend}
-        </div>
-      </div>
-      <div className="mt-6">
-        <h3 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h3>
-        <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-2">{label}</p>
-      </div>
+    <div onClick={onClick} className={className}>
+      {content}
+      {stats}
     </div>
   );
 }
