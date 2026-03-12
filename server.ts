@@ -87,14 +87,14 @@ if (!seedUser) {
   db.prepare("INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)").run(
     adminEmail,
     adminPass,
-    "Av. Mahmut KORKMAZ & Av. Zeki FIRAT",
+    "Av. Mahmut KORKMAZ, Av. Zeki FIRAT",
     "lawyer"
   );
 } else {
   // Always ensure the name and password are correct
   db.prepare("UPDATE users SET password = ?, name = ? WHERE email = ?").run(
     adminPass, 
-    "Av. Mahmut KORKMAZ & Av. Zeki FIRAT", 
+    "Av. Mahmut KORKMAZ, Av. Zeki FIRAT", 
     adminEmail
   );
 }

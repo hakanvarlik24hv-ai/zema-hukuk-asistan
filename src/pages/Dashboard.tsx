@@ -26,6 +26,7 @@ import {
 import { DashboardStats, Hearing } from '../types';
 import { API_BASE_URL } from '../config';
 import { cn } from '../lib/utils';
+import { useNavigate, Link } from 'react-router-dom';
 
 const chartData = [
   { name: 'Oca', davalar: 4, tamamlanan: 2 },
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [hearings, setHearings] = useState<Hearing[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -99,6 +101,7 @@ export default function Dashboard() {
           color="bg-blue-500/10 text-blue-600"
           trend="+2 bu ay"
           trendDir="up"
+          onClick={() => navigate('/cases')}
         />
         <StatCard
           label="Yaklaşan Duruşmalar"
@@ -107,6 +110,7 @@ export default function Dashboard() {
           color="bg-amber-500/10 text-amber-600"
           trend="Haftalık"
           trendDir="neutral"
+          onClick={() => navigate('/calendar')}
         />
         <StatCard
           label="Toplam Müvekkil"
@@ -115,6 +119,7 @@ export default function Dashboard() {
           color="bg-emerald-500/10 text-emerald-600"
           trend="+5 yeni"
           trendDir="up"
+          onClick={() => navigate('/clients')}
         />
         <StatCard
           label="Bekleyen Ödemeler"
@@ -204,11 +209,11 @@ export default function Dashboard() {
           <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-xl shadow-slate-200/50">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-900">Ajanda</h3>
-              <button className="text-[10px] font-black text-logo-gold hover:underline uppercase tracking-widest">Tümünü Gör</button>
+              <Link to="/calendar" className="text-[10px] font-black text-logo-gold hover:underline uppercase tracking-widest">Tümünü Gör</Link>
             </div>
             <div className="space-y-4">
               {hearings.length > 0 ? hearings.slice(0, 4).map((hearing) => (
-                <div key={hearing.id} className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 cursor-pointer">
+                <div key={hearing.id} onClick={() => navigate('/calendar')} className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 cursor-pointer">
                   <div className="flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-slate-100 group-hover:bg-logo-gold/10 transition-colors">
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
                       {new Date(hearing.hearing_date).toLocaleDateString('tr-TR', { month: 'short' })}
@@ -246,7 +251,7 @@ export default function Dashboard() {
             </div>
             <h3 className="font-black text-lg relative z-10">AI Hukuk Asistanı</h3>
             <p className="text-slate-300 text-xs mt-2 relative z-10 font-medium">Hızlı dilekçe veya emsal karara mı ihtiyacın var?</p>
-            <button className="mt-6 w-full bg-logo-gold hover:bg-logo-gold/90 text-brand-navy font-black py-3 rounded-xl transition-all relative z-10 text-sm active:scale-95 shadow-lg shadow-logo-gold/20">
+            <button onClick={() => navigate('/ai-petition')} className="mt-6 w-full bg-logo-gold hover:bg-logo-gold/90 text-brand-navy font-black py-3 rounded-xl transition-all relative z-10 text-sm active:scale-95 shadow-lg shadow-logo-gold/20">
               Aracı Başlat
             </button>
           </div>
@@ -256,9 +261,15 @@ export default function Dashboard() {
   );
 }
 
-function StatCard({ label, value, icon: Icon, color, trend, trendDir }: any) {
+function StatCard({ label, value, icon: Icon, color, trend, trendDir, onClick }: any) {
   return (
-    <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+    <div 
+      onClick={onClick}
+      className={cn(
+        "bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 shadow-lg shadow-slate-200/50 transition-all duration-300 group",
+        onClick ? "hover:shadow-2xl hover:-translate-y-1 cursor-pointer" : ""
+      )}
+    >
       <div className="flex items-start justify-between">
         <div className={cn("p-4 rounded-2xl transition-transform group-hover:rotate-6", color)}>
           <Icon size={24} />

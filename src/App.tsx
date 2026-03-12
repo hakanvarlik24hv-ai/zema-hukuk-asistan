@@ -97,7 +97,7 @@ export default function App() {
   }
 
   // Fallback user if login failed (to prevent blank screen in dev/offline)
-  const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ & Av. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
+  const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ, Av. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
 
   return (
     <div className="min-h-screen bg-white flex overflow-hidden">
@@ -150,7 +150,7 @@ export default function App() {
 
           <nav className="flex-1 space-y-4">
             <section className="bg-white/40 backdrop-blur-md border border-white/60 rounded-2xl p-1.5 shadow-sm">
-              {isSidebarOpen && <p className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-2">Menü</p>}
+              {isSidebarOpen && <p className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-2">PANEL</p>}
               <SidebarItem icon={LayoutDashboard} label="Panel" to="/" active={location.pathname === '/'} />
               <SidebarItem icon={Users} label="Müvekkiller" to="/clients" active={location.pathname === '/clients'} />
               <SidebarItem icon={Briefcase} label="Dava Dosyaları" to="/cases" active={location.pathname === '/cases'} />
