@@ -181,7 +181,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-2.5-flash", "gemini-1.5-pro", "gemini-1.5-pro-latest", "gemini-1.5-flash-latest"];
+    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-pro-latest"];
     let lastError: any = null;
 
     for (const modelName of models) {
