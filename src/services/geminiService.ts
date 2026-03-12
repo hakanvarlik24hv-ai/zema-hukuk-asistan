@@ -30,17 +30,33 @@ export const generatePetition = async (data: {
 };
 
 export const analyzeCaseFile = async (content: string) => {
-  const response = await fetch(`${API_BASE_URL}/api/ai/analyze`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content }),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/ai/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
 
-  if (!response.ok) {
-    return { missingPoints: ["Sunucu Hatası"], risks: [], suggestions: [], laws: [] };
+    if (!response.ok) {
+      let errorMsg = "Sunucu Hatası";
+      try {
+        const errorData = await response.json();
+        errorMsg = errorData.error || errorMsg;
+      } catch (e) {
+        // Backend returned HTML or non-JSON content
+      }
+      throw new Error(errorMsg);
+    }
+
+    const data = await response.json();
+    if (!data || typeof data !== 'object') {
+     throw new Error("Geçersiz veri formatı alındı.");
+    }
+    return data;
+  } catch (err: any) {
+     console.error("Analysis Fetch Error:", err);
+     throw new Error(err.message || "Analiz yapılamadı.");
   }
-
-  return await response.json();
 };
 
 export const searchPrecedents = async (query: string) => {

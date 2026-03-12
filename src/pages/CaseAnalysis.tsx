@@ -36,7 +36,7 @@ export default function CaseAnalysis() {
         </div>
         <div>
           <h1 className="text-2xl font-black text-white">Otomatik Dava Dosyası Analizi</h1>
-          <p className="text-white/80 text-sm font-black">Dilekçelerdeki riskleri, eksiklikleri ve stratejik önerileri anında görün.</p>
+          <p className="text-white text-sm font-black">Dilekçelerdeki riskleri, eksiklikleri ve stratejik önerileri anında görün.</p>
         </div>
       </div>
 
