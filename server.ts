@@ -181,7 +181,7 @@ async function startServer() {
   });
 
   const callAI = async (prompt: string, isJson: boolean = false) => {
-    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.5-pro-latest"];
+    const models = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
     let lastError: any = null;
 
     for (const modelName of models) {
@@ -201,8 +201,11 @@ async function startServer() {
         }
       } catch (err: any) {
         lastError = err;
-        console.error(`AI Error with ${modelName}:`, err.message || err);
-        if (err.message?.includes("429") || err.message?.includes("quota") || err.message?.includes("not found")) {
+        const errMsg = (err.message || "").toLowerCase();
+        console.error(`AI Error with ${modelName}:`, errMsg);
+        
+        // Retry on 429 (quota), 503 (overload), or 404 (model not found)
+        if (errMsg.includes("429") || errMsg.includes("quota") || errMsg.includes("overloaded") || errMsg.includes("not found") || errMsg.includes("404")) {
           continue;
         }
         throw err;
