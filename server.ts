@@ -80,19 +80,23 @@ db.exec(`
 `);
 
 // Seed initial user
-const adminEmail = "admin@hukukasistan.com";
+const adminEmail = "yonetim@zemahukuk.com.tr";
 const adminPass = "zema2024";
 const seedUser = db.prepare("SELECT * FROM users WHERE email = ?").get(adminEmail);
 if (!seedUser) {
   db.prepare("INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)").run(
     adminEmail,
     adminPass,
-    "Av. Ahmet Yılmaz",
+    "Av. Mahmut KORKMAZ & Av. Zeki FIRAT",
     "lawyer"
   );
 } else {
-  // Always ensure the password is what App.tsx expects if it already exists
-  db.prepare("UPDATE users SET password = ? WHERE email = ?").run(adminPass, adminEmail);
+  // Always ensure the name and password are correct
+  db.prepare("UPDATE users SET password = ?, name = ? WHERE email = ?").run(
+    adminPass, 
+    "Av. Mahmut KORKMAZ & Av. Zeki FIRAT", 
+    adminEmail
+  );
 }
 
 async function startServer() {
@@ -117,7 +121,7 @@ async function startServer() {
     // For now, if currentUser is null, we check the db for the default user as a fallback
     // to make it "stay logged in" for this specific use case.
     if (!currentUser) {
-      currentUser = db.prepare("SELECT * FROM users WHERE email = ?").get("admin@hukukasistan.com");
+      currentUser = db.prepare("SELECT * FROM users WHERE email = ?").get("yonetim@zemahukuk.com.tr");
     }
     next();
   };

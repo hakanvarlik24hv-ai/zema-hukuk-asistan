@@ -97,7 +97,7 @@ export default function App() {
   }
 
   // Fallback user if login failed (to prevent blank screen in dev/offline)
-  const activeUser = user || { id: 1, name: 'Zema Admin', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
+  const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ & Av. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
 
   return (
     <div className="min-h-screen bg-white flex overflow-hidden">
