@@ -10,8 +10,10 @@ import {
   ChevronRight,
   TrendingUp,
   Activity,
-  Award
+  Award,
+  RefreshCw
 } from 'lucide-react';
+import { useToast } from '../components/ToastProvider';
 import {
   AreaChart,
   Area,
@@ -62,6 +64,28 @@ export default function Dashboard() {
     fetchDashboardData();
   }, []);
 
+  const { showToast } = useToast();
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleResetData = async () => {
+    if (!window.confirm("Tüm veri ve bildirimleri sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.")) return;
+    
+    setResetLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/reset-data`, { method: 'POST' });
+      if (res.ok) {
+        showToast('success', 'Sistem Sıfırlandı', 'Tüm veri ve bildirimler başarıyla temizlendi.');
+        window.location.reload();
+      } else {
+        throw new Error('Sıfırlama işlemi başarısız oldu.');
+      }
+    } catch (err: any) {
+      showToast('error', 'Hata', err.message || 'Bir hata oluştu.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   if (loading) return null;
 
   return (
@@ -90,6 +114,14 @@ export default function Dashboard() {
             <Calendar size={20} />
           </div>
         </div>
+        <button 
+          onClick={handleResetData}
+          disabled={resetLoading}
+          className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 px-4 py-3 rounded-2xl border border-rose-500/20 transition-all font-black text-xs active:scale-95 disabled:opacity-50 group"
+        >
+          <RefreshCw size={16} className={cn(resetLoading && "animate-spin")} />
+          {resetLoading ? 'Sıfırlanıyor...' : 'Sistemi Sıfırla'}
+        </button>
       </div>
 
       {/* Stats Grid */}

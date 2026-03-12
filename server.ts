@@ -77,11 +77,25 @@ db.exec(`
     due_date DATETIME,
     FOREIGN KEY(case_id) REFERENCES cases(id)
   );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    title TEXT,
+    message TEXT,
+    read INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
 `);
 
 // Seed initial user
 const adminEmail = "yonetim@zemahukuk.com.tr";
 const adminPass = "zema2024";
+
+// Clean up any old admin email that might be lingering
+db.prepare("DELETE FROM users WHERE email = ?").run("admin@hukukasistan.com");
+
 const seedUser = db.prepare("SELECT * FROM users WHERE email = ?").get(adminEmail);
 if (!seedUser) {
   db.prepare("INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)").run(
@@ -261,6 +275,24 @@ async function startServer() {
     } catch (err: any) {
       console.error("AI Contract Error:", err);
       res.status(500).json({ error: `Sözleşme hatası: ${err.message}` });
+    }
+  });
+
+  // Data Reset Endpoint
+  app.post("/api/admin/reset-data", requireAuth, (req, res) => {
+    try {
+      db.exec(`
+        DELETE FROM notifications;
+        DELETE FROM payments;
+        DELETE FROM documents;
+        DELETE FROM hearings;
+        DELETE FROM cases;
+        DELETE FROM clients;
+      `);
+      res.json({ success: true, message: "Tüm veriler başarıyla sıfırlandı." });
+    } catch (err: any) {
+      console.error("Reset Error:", err);
+      res.status(500).json({ error: "Veri sıfırlama hatası." });
     }
   });
 

@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { FileText, Send, Download, Copy, Loader2, Sparkles, AlertCircle, Check } from 'lucide-react';
 import { generatePetition } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
+import { useToast } from '../components/ToastProvider';
 // Remove import html2pdf from 'html2pdf.js' to avoid Vite errors; use CDN
 
 export default function PetitionGenerator() {
@@ -11,6 +12,7 @@ export default function PetitionGenerator() {
 
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     caseType: 'Boşanma Davası',
     parties: '',
@@ -27,7 +29,9 @@ export default function PetitionGenerator() {
       setResult(text || '');
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Bir hata oluştu. Lütfen API anahtarını kontrol edin.');
+      const msg = err.message || 'Bir hata oluştu. Lütfen API anahtarını kontrol edin.';
+      setError(msg);
+      showToast('error', 'Dilekçe Oluşturulamadı', msg + ' Lütfen internet bağlantınızı ve ayarları kontrol edin.', 7000);
     } finally {
       setLoading(false);
     }

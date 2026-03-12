@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider, useToast } from './components/ToastProvider';
 import {
   LayoutDashboard,
   Users,
@@ -100,6 +102,8 @@ export default function App() {
   const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ\nAv. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
 
   return (
+    <ToastProvider>
+    <ErrorBoundary>
     <div className="min-h-screen bg-white flex overflow-hidden">
       {/* Mobile Overlay */}
       <AnimatePresence>
@@ -267,5 +271,7 @@ export default function App() {
         </div>
       </main>
     </div>
+      </ErrorBoundary>
+    </ToastProvider>
   );
 }
