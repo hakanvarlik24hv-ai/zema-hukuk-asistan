@@ -15,10 +15,11 @@ import {
   Menu,
   X,
   FileSearch,
-  FileSignature
+  FileSignature,
+  Wallet
 } from 'lucide-react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './lib/utils';
 import { User } from './types';
 import { API_BASE_URL } from './config';
@@ -33,6 +34,7 @@ import CaseAnalysis from './pages/CaseAnalysis';
 import CalendarPage from './pages/Calendar';
 import CalculatorPage from './pages/Calculator';
 import ContractGenerator from './pages/ContractGenerator';
+import Payments from './pages/Payments';
 
 const SidebarItem = ({ icon: Icon, label, to, active, onClick }: {
   icon: any,
@@ -178,6 +180,7 @@ export default function App() {
             <section className="bg-white/40 backdrop-blur-md border border-white/60 rounded-2xl p-1.5 shadow-sm">
               {isSidebarOpen && <p className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 mt-2">Operasyon</p>}
               <SidebarItem icon={Calendar} label="Takvim" to="/calendar" active={location.pathname === '/calendar'} />
+              <SidebarItem icon={Wallet} label="Ödemeler" to="/payments" active={location.pathname === '/payments'} />
               <SidebarItem icon={Calculator} label="Hesaplama" to="/calculator" active={location.pathname === '/calculator'} />
             </section>
           </nav>
@@ -228,7 +231,8 @@ export default function App() {
                           location.pathname === '/ai-analysis' ? 'Analiz' :
                             location.pathname === '/ai-contract' ? 'Sözleşme' :
                               location.pathname === '/calendar' ? 'Takvim' :
-                                location.pathname === '/calculator' ? 'Hesaplama' : ''}
+                                location.pathname === '/payments' ? 'Ödemeler' :
+                                  location.pathname === '/calculator' ? 'Hesaplama' : ''}
               </span>
             </div>
           </div>
@@ -321,6 +325,7 @@ export default function App() {
               <Route path="/ai-analysis" element={<CaseAnalysis />} />
               <Route path="/ai-contract" element={<ContractGenerator />} />
               <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/payments" element={<Payments />} />
               <Route path="/calculator" element={<CalculatorPage />} />
             </Routes>
           </AnimatePresence>

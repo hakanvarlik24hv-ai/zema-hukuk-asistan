@@ -220,6 +220,22 @@ async function startServer() {
     res.json(db.prepare("SELECT hearings.*, cases.title as case_title FROM hearings JOIN cases ON hearings.case_id = cases.id ORDER BY hearing_date ASC").all());
   });
 
+  app.get("/api/payments", requireAuth, (req, res) => {
+    res.json(db.prepare(`
+      SELECT payments.*, cases.title as case_title, clients.name as client_name 
+      FROM payments 
+      JOIN cases ON payments.case_id = cases.id 
+      JOIN clients ON cases.client_id = clients.id
+      ORDER BY due_date DESC
+    `).all());
+  });
+
+  app.post("/api/payments", requireAuth, (req, res) => {
+    const { case_id, amount, status, due_date } = req.body;
+    const result = db.prepare("INSERT INTO payments (case_id, amount, status, due_date) VALUES (?, ?, ?, ?)").run(case_id, amount, status, due_date);
+    res.json({ id: result.lastInsertRowid });
+  });
+
   const callAI = async (prompt: string, isJson: boolean = false) => {
     const models = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"];
     let lastError: any = null;
