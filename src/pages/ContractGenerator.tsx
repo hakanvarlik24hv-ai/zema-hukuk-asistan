@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Send, Download, Copy, Loader2, FileSignature, AlertCircle } from 'lucide-react';
+import { FileText, Send, Download, Copy, Loader2, FileSignature, AlertCircle, Check } from 'lucide-react';
 import { generateContract } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
+// Use CDN for html2pdf
 
 export default function ContractGenerator() {
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
@@ -28,6 +31,66 @@ export default function ContractGenerator() {
     }
   };
 
+  const handleCopy = () => {
+    if (!result) return;
+    navigator.clipboard.writeText(result);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadWord = () => {
+    const element = document.getElementById("contract-content");
+    if (!element) return;
+
+    const html = `<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <title>Sozlesme</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        @page WordSection1 {
+            size: 21.0cm 29.7cm;
+            margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+        }
+        div.WordSection1 { page: WordSection1; }
+        body { font-family: "Times New Roman", serif; font-size: 12pt; }
+        p, span, div, h1, h2, h3, h4, li { 
+            font-family: "Times New Roman", serif; 
+            font-size: 12pt; 
+            line-height: 1.5;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+    <div class="WordSection1">
+        ${element.innerHTML}
+    </div>
+</body>
+</html>`;
+
+    const blob = new Blob(['\ufeff', html], {
+      type: 'application/msword;charset=utf-8'
+    });
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = 'sozlesme.doc';
+    downloadLink.click();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -46,7 +109,7 @@ export default function ContractGenerator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xl space-y-4">
+          <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl space-y-4">
             <div>
               <label className="block text-xs font-black text-slate-900 uppercase tracking-widest mb-2">Sözleşme Türü</label>
               <select
@@ -93,7 +156,7 @@ export default function ContractGenerator() {
         </div>
 
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm h-full flex flex-col min-h-[600px]">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm h-full flex flex-col min-h-[600px]">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <h3 className="font-bold text-brand-navy flex items-center gap-2">
                 <FileText size={18} className="text-slate-400" />
@@ -101,24 +164,37 @@ export default function ContractGenerator() {
               </h3>
               {result && (
                 <div className="flex gap-2">
-                  <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" title="Kopyala">
-                    <Copy size={18} />
+                  <button onClick={handleCopy} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="Kopyala">
+                    {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+                    <span className="hidden sm:inline">{copied ? 'Kopyalandı' : 'Kopyala'}</span>
                   </button>
-                  <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors" title="PDF İndir">
-                    <Download size={18} />
+                  <button onClick={handleDownloadWord} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="Word Olarak İndir">
+                    <Download size={16} />
+                    <span className="hidden sm:inline">Word İndir</span>
                   </button>
+
                 </div>
               )}
             </div>
-            <div className="flex-1 p-8 overflow-y-auto prose prose-slate max-w-none text-slate-900">
+            <div className="flex-1 p-4 lg:p-8 overflow-y-auto bg-slate-50/30">
               {loading ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4">
                   <Loader2 className="animate-spin text-logo-gold" size={40} />
                   <p className="text-sm font-black text-slate-900">Sözleşmeniz hazırlanıyor...</p>
                 </div>
               ) : result ? (
-                <div className="markdown-body">
-                  <ReactMarkdown>{result}</ReactMarkdown>
+                <div id="contract-content" className="max-w-[21cm] mx-auto bg-white shadow-2xl p-[2.5cm] min-h-[29.7cm] border border-slate-200">
+                  <div 
+                    className="markdown-body text-black"
+                    style={{
+                      fontFamily: "'Times New Roman', serif",
+                      fontSize: "12pt",
+                      lineHeight: "1.5",
+                      textAlign: "justify"
+                    }}
+                  >
+                    <ReactMarkdown>{result}</ReactMarkdown>
+                  </div>
                 </div>
               ) : error ? (
                 <div className="h-full flex flex-col items-center justify-center text-rose-600 space-y-4 text-center px-12">

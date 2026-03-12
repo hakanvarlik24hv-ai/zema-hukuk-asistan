@@ -82,8 +82,8 @@ export default function Clients() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl">
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-transparent">
           <div className="relative w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-900" size={16} />
             <input
@@ -102,7 +102,7 @@ export default function Clients() {
         <div className="overflow-x-auto min-h-[300px] pb-24">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/50">
+              <tr className="bg-transparent">
                 <th className="px-6 py-4 data-grid-header">Müvekkil Adı</th>
                 <th className="px-6 py-4 data-grid-header">E-posta</th>
                 <th className="px-6 py-4 data-grid-header">Telefon</th>
@@ -203,7 +203,7 @@ export default function Clients() {
 
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -283,7 +283,7 @@ export default function Clients() {
       </AnimatePresence>
       <AnimatePresence>
         {selectedClientForView && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -35,14 +35,14 @@ export default function CaseAnalysis() {
           <FileSearch className="text-brand-navy" size={24} />
         </div>
         <div>
-          <h1 className="text-2xl font-black text-slate-950">Otomatik Dava Dosyası Analizi</h1>
-          <p className="text-slate-900 text-sm font-black">Dilekçelerdeki riskleri, eksiklikleri ve stratejik önerileri anında görün.</p>
+          <h1 className="text-2xl font-black text-white">Otomatik Dava Dosyası Analizi</h1>
+          <p className="text-white/80 text-sm font-black">Dilekçelerdeki riskleri, eksiklikleri ve stratejik önerileri anında görün.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xl">
+          <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
             <label className="block text-xs font-black text-slate-900 uppercase tracking-widest mb-4">Dilekçe veya Dosya Metni</label>
             <textarea
               placeholder="Analiz edilmesini istediğiniz metni buraya yapıştırın..."
@@ -64,14 +64,14 @@ export default function CaseAnalysis() {
 
         <div className="space-y-6">
           {loading ? (
-            <div className="h-full flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-slate-300 shadow-xl">
+            <div className="h-full flex flex-col items-center justify-center py-20 bg-white/80 backdrop-blur-md rounded-2xl border border-dashed border-slate-300 shadow-xl">
               <Loader2 className="animate-spin text-logo-gold mb-4" size={48} />
               <p className="text-slate-900 font-black">Yapay zeka dosyayı inceliyor...</p>
             </div>
           ) : analysis ? (
             <div className="space-y-6">
               {/* Risks */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
+              <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
                 <div className="flex items-center gap-2 mb-4 text-rose-600">
                   <AlertTriangle size={20} />
                   <h3 className="font-bold">Hukuki Riskler</h3>
@@ -87,7 +87,7 @@ export default function CaseAnalysis() {
               </div>
 
               {/* Missing Points */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
+              <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
                 <div className="flex items-center gap-2 mb-4 text-amber-600">
                   <Info size={20} />
                   <h3 className="font-bold">Eksik Noktalar</h3>
@@ -103,7 +103,7 @@ export default function CaseAnalysis() {
               </div>
 
               {/* Suggestions */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
+              <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
                 <div className="flex items-center gap-2 mb-4 text-emerald-600">
                   <CheckCircle2 size={20} />
                   <h3 className="font-bold">Stratejik Öneriler</h3>
@@ -119,12 +119,12 @@ export default function CaseAnalysis() {
               </div>
             </div>
           ) : error ? (
-            <div className="h-full flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-rose-300 shadow-xl text-rose-600 text-center px-12">
+            <div className="h-full flex flex-col items-center justify-center py-20 bg-white/80 backdrop-blur-md rounded-2xl border border-dashed border-rose-300 shadow-xl text-rose-600 text-center px-12">
               <AlertTriangle size={64} className="mb-4" />
               <p className="font-black">{error}</p>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-slate-200 shadow-xl text-slate-400 text-center px-12">
+            <div className="h-full flex flex-col items-center justify-center py-20 bg-white/80 backdrop-blur-md rounded-2xl border border-dashed border-slate-200 shadow-xl text-slate-400 text-center px-12">
               <Upload size={64} strokeWidth={1} className="mb-4" />
               <p className="text-sm font-black text-slate-950">Metni yapıştırıp analizi başlattığınızda sonuçlar burada görünecektir.</p>
             </div>

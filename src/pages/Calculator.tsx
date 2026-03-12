@@ -206,7 +206,7 @@ export default function CalculatorPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="bg-white p-8 rounded-2xl border border-slate-100 shadow-xl"
+          className="bg-white/80 backdrop-blur-md p-8 rounded-2xl border border-white/20 shadow-xl"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-logo-gold/10 text-logo-gold rounded-lg">
@@ -228,8 +228,8 @@ function CalcCard({ title, description, icon: Icon, color, active, onClick }: an
     <div
       onClick={onClick}
       className={cn(
-        "bg-white p-6 rounded-2xl border transition-all cursor-pointer group",
-        active ? "border-logo-gold shadow-xl ring-2 ring-logo-gold/10" : "border-slate-100 shadow-xl hover:shadow-2xl"
+        "bg-white/80 backdrop-blur-md p-6 rounded-2xl border transition-all cursor-pointer group",
+        active ? "border-logo-gold shadow-xl ring-2 ring-logo-gold/10" : "border-white/20 shadow-xl hover:shadow-2xl"
       )}
     >
       <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110", color)}>

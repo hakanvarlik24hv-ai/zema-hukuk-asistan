@@ -132,7 +132,7 @@ export default function CalendarPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Calendar View */}
-        <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-100 shadow-xl overflow-hidden">
+        <div className="lg:col-span-3 bg-white/80 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden">
           <div className="p-6 border-b border-brand-navy/10 flex items-center justify-between">
             <h3 className="font-bold text-lg text-brand-navy">Mart 2026</h3>
             <div className="flex gap-2">
@@ -174,7 +174,7 @@ export default function CalendarPage() {
 
         {/* Upcoming List */}
         <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl">
+          <div className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
             <h3 className="font-bold text-brand-navy mb-6">Günün Programı</h3>
             <div className="space-y-6">
               {hearings.filter(h => new Date(h.hearing_date).getDate() === 9).map(hearing => (

@@ -72,10 +72,10 @@ export default function Dashboard() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-none">Hoş Heldiniz Yönetici</h1>
-          <p className="text-slate-500 font-bold mt-2 text-sm lg:text-base">Bugün bekleyen duruşmalarınız ve dilekçeleriniz var.</p>
+          <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight leading-none">Hoş Geldiniz Yönetici</h1>
+          <p className="text-white/80 font-bold mt-2 text-sm lg:text-base">Bugün bekleyen duruşmalarınız ve dilekçeleriniz var.</p>
         </div>
-        <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm self-start md:self-auto">
+        <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/20 shadow-sm self-start md:self-auto">
           <div className="text-right">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
               {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -128,7 +128,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Main Chart Card */}
-        <div className="lg:col-span-2 bg-white p-6 lg:p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50">
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-md p-6 lg:p-8 rounded-3xl border border-white/20 shadow-xl shadow-slate-200/50">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="font-black text-slate-900 text-lg">Hukuki Süreç Analizi</h3>
@@ -201,7 +201,7 @@ export default function Dashboard() {
         {/* Sidebar Cards */}
         <div className="space-y-6">
           {/* Upcoming Hearings */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50">
+          <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-xl shadow-slate-200/50">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-black text-slate-900">Ajanda</h3>
               <button className="text-[10px] font-black text-logo-gold hover:underline uppercase tracking-widest">Tümünü Gör</button>
@@ -258,7 +258,7 @@ export default function Dashboard() {
 
 function StatCard({ label, value, icon: Icon, color, trend, trendDir }: any) {
   return (
-    <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+    <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/20 shadow-lg shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
       <div className="flex items-start justify-between">
         <div className={cn("p-4 rounded-2xl transition-transform group-hover:rotate-6", color)}>
           <Icon size={24} />

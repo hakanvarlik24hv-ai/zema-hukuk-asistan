@@ -43,7 +43,7 @@ export default function PrecedentSearch() {
         </div>
       </div>
 
-      <div className="bg-white p-2 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-2">
+      <div className="bg-white/80 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-sm flex items-center gap-2">
         <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -82,7 +82,7 @@ export default function PrecedentSearch() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group"
+              className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-sm hover:shadow-md transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">

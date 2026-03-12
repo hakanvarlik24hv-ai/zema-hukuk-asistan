@@ -122,17 +122,17 @@ export default function App() {
         )}
       >
         <div
-          className="absolute inset-0 z-0 blur-[2px] opacity-60"
+          className="absolute top-0 left-0 w-full h-[100vh] z-0 blur-[2px] opacity-60"
           style={{
-            backgroundImage: `url('https://i.hizliresim.com/t11q2tv.jpg')`,
+            backgroundImage: `url('https://i.hizliresim.com/ofc01s1.png')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: 'top',
             backgroundRepeat: 'no-repeat'
           }}
         />
         <div className="h-full flex flex-col p-4 relative z-10">
           <div className="flex items-center gap-3 px-2 mb-8 text-slate-950">
-            <div className="w-12 h-12 bg-transparent flex items-center justify-center overflow-hidden shrink-0">
+            <div className="w-20 h-20 bg-transparent flex items-center justify-center overflow-hidden shrink-0">
               <img src="https://i.hizliresim.com/j4yxat8.png" alt="Zema Logo" className="w-full h-full object-contain" />
             </div>
             {isSidebarOpen && (
@@ -188,7 +188,17 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-slate-50 relative overflow-hidden">
+      <main className="flex-1 flex flex-col min-w-0 bg-transparent relative overflow-hidden">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url('https://i.hizliresim.com/42rlxep.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 1
+          }}
+        />
         <header className="h-16 bg-white/80 backdrop-blur-lg border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-40">
           <div className="flex items-center gap-4">
             <button
@@ -199,7 +209,15 @@ export default function App() {
             </button>
             <div className="hidden sm:flex items-center gap-2">
               <span className="text-sm font-black text-slate-900 uppercase tracking-widest">
-                {location.pathname === '/' ? 'Dashboard' : location.pathname.split('/')[1].replace('ai-', 'AI ')}
+                {location.pathname === '/' ? 'Panel' :
+                  location.pathname === '/clients' ? 'Müvekkiller' :
+                    location.pathname === '/cases' ? 'Dava Dosyaları' :
+                      location.pathname === '/ai-petition' ? 'Dilekçe' :
+                        location.pathname === '/ai-search' ? 'Emsal Arama' :
+                          location.pathname === '/ai-analysis' ? 'Analiz' :
+                            location.pathname === '/ai-contract' ? 'Sözleşme' :
+                              location.pathname === '/calendar' ? 'Takvim' :
+                                location.pathname === '/calculator' ? 'Hesaplama' : ''}
               </span>
             </div>
           </div>
@@ -224,8 +242,9 @@ export default function App() {
             <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
 
             <div className="flex items-center gap-3 pl-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-900 to-slate-900 flex items-center justify-center text-white font-black text-xs shadow-md">
-                {activeUser.name[0]}
+              <div className="text-right hidden sm:block">
+                <div className="text-sm font-black text-slate-900">{new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                <div className="text-xs font-bold text-slate-500">{new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} • ☀️ Açık, 22°C</div>
               </div>
             </div>
           </div>

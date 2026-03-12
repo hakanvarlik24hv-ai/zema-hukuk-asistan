@@ -107,7 +107,7 @@ export default function Cases() {
           <motion.div
             key={item.id}
             whileHover={{ y: -4 }}
-            className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xl hover:shadow-2xl transition-all cursor-pointer group"
+            className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all cursor-pointer group"
           >
             <div className="flex items-start justify-between mb-4">
               <div className="p-2 bg-logo-gold/10 text-logo-gold rounded-lg">
@@ -158,7 +158,7 @@ export default function Cases() {
       </div>
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -263,7 +263,7 @@ export default function Cases() {
 
       <AnimatePresence>
         {selectedCase && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

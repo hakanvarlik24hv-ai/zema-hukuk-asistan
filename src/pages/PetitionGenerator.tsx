@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { FileText, Send, Download, Copy, Loader2, Sparkles, AlertCircle, Check } from 'lucide-react';
 import { generatePetition } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
+// Remove import html2pdf from 'html2pdf.js' to avoid Vite errors; use CDN
 
 export default function PetitionGenerator() {
   const [loading, setLoading] = useState(false);
@@ -39,94 +40,57 @@ export default function PetitionGenerator() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadPDF = async () => {
-    const element = document.getElementById("petition-content");
-    if (!element) return;
-
-    // Create a temporary container for styling
-    const container = document.createElement("div");
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Apply legal formatting
-    clone.style.fontFamily = "'Times New Roman', Times, serif";
-    clone.style.fontSize = "12pt";
-    clone.style.lineHeight = "1.5";
-    clone.style.textAlign = "justify";
-    clone.style.color = "#000000";
-    clone.style.padding = "20px";
-
-    // Force all paragraphs and children to inherit text format
-    const allChildren = clone.querySelectorAll('*');
-    allChildren.forEach((child) => {
-      (child as HTMLElement).style.fontFamily = "'Times New Roman', Times, serif";
-      (child as HTMLElement).style.fontSize = "12pt";
-      (child as HTMLElement).style.lineHeight = "1.5";
-      (child as HTMLElement).style.color = "#000000";
-    });
-
-    container.appendChild(clone);
-    document.body.appendChild(container);
-
-    const opt: any = {
-      margin: 15,
-      filename: 'dilekce.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    try {
-      // @ts-ignore
-      const html2pdf = (await import('html2pdf.js')).default;
-      await html2pdf().set(opt).from(container).save();
-    } catch (e) {
-      console.error("PDF Download Error:", e);
-      alert("PDF indirilirken bir hata oluştu.");
-    } finally {
-      document.body.removeChild(container);
-    }
-  };
-
   const handleDownloadWord = () => {
     const element = document.getElementById("petition-content");
     if (!element) return;
 
-    const preHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head>
-      <meta charset='utf-8'>
-      <title>Dilekce</title>
-      <style>
-        body {
-          font-family: 'Times New Roman', Times, serif !important;
-          font-size: 12pt !important;
-          line-height: 1.5 !important;
-          text-align: justify !important;
-          color: #000000 !important;
+    const html = `<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <title>Dilekce</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>100</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        @page WordSection1 {
+            size: 21.0cm 29.7cm;
+            margin: 2.5cm 2.5cm 2.5cm 2.5cm;
         }
-        p, div, span, h1, h2, h3, h4, h5, h6, li {
-          font-family: 'Times New Roman', Times, serif !important;
-          font-size: 12pt !important;
-          line-height: 1.5 !important;
-          color: #000000 !important;
+        div.WordSection1 { page: WordSection1; }
+        body { font-family: "Times New Roman", serif; font-size: 12pt; }
+        p, span, div, h1, h2, h3, h4, li { 
+            font-family: "Times New Roman", serif; 
+            font-size: 12pt; 
+            line-height: 1.5;
+            text-align: justify;
         }
-        p { margin-bottom: 12pt; }
-      </style>
-    </head><body>`;
-    const postHtml = "</body></html>";
-    const html = preHtml + element.innerHTML + postHtml;
+    </style>
+</head>
+<body>
+    <div class="WordSection1">
+        ${element.innerHTML}
+    </div>
+</body>
+</html>`;
 
-    // Create a Blob with the file content
     const blob = new Blob(['\ufeff', html], {
       type: 'application/msword;charset=utf-8'
     });
 
-    // Create a link to download it
     const downloadLink = document.createElement("a");
-    document.body.appendChild(downloadLink);
     downloadLink.href = URL.createObjectURL(blob);
     downloadLink.download = 'dilekce.doc';
     downloadLink.click();
-    document.body.removeChild(downloadLink);
   };
 
   return (
@@ -148,7 +112,7 @@ export default function PetitionGenerator() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Form Section */}
         <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xl space-y-4">
+          <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl space-y-4">
             <div>
               <label className="block text-xs font-black text-slate-900 uppercase tracking-widest mb-2">Dava Türü</label>
               <select
@@ -222,7 +186,7 @@ export default function PetitionGenerator() {
 
         {/* Result Section */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm h-full flex flex-col min-h-[600px]">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm h-full flex flex-col min-h-[600px]">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <h3 className="font-bold text-brand-navy flex items-center gap-2">
                 <FileText size={18} className="text-slate-400" />
@@ -238,22 +202,29 @@ export default function PetitionGenerator() {
                     <Download size={16} />
                     <span className="hidden sm:inline">Word İndir</span>
                   </button>
-                  <button onClick={handleDownloadPDF} className="flex items-center gap-1 px-3 py-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors text-sm font-semibold border border-slate-200" title="PDF Olarak İndir">
-                    <Download size={16} />
-                    <span className="hidden sm:inline">PDF İndir</span>
-                  </button>
+
                 </div>
               )}
             </div>
-            <div className="flex-1 p-8 overflow-y-auto prose prose-slate max-w-none">
+            <div className="flex-1 p-4 lg:p-8 overflow-y-auto bg-slate-50/30">
               {loading ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-950 font-black space-y-4">
                   <Loader2 className="animate-spin text-logo-gold" size={40} />
                   <p className="text-sm">Dilekçeniz hazırlanıyor, lütfen bekleyin...</p>
                 </div>
               ) : result ? (
-                <div id="petition-content" className="markdown-body text-slate-800">
-                  <ReactMarkdown>{result}</ReactMarkdown>
+                <div id="petition-content" className="max-w-[21cm] mx-auto bg-white shadow-2xl p-[2.5cm] min-h-[29.7cm] border border-slate-200">
+                  <div 
+                    className="markdown-body text-black"
+                    style={{
+                      fontFamily: "'Times New Roman', serif",
+                      fontSize: "12pt",
+                      lineHeight: "1.5",
+                      textAlign: "justify"
+                    }}
+                  >
+                    <ReactMarkdown>{result}</ReactMarkdown>
+                  </div>
                 </div>
               ) : error ? (
                 <div className="h-full flex flex-col items-center justify-center text-rose-600 space-y-4 text-center px-12">
