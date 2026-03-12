@@ -50,4 +50,9 @@ export interface DashboardStats {
       pendingPayments: 'up' | 'down' | 'neutral';
     };
   };
+  chartData: {
+    name: string;
+    davalar: number;
+    tamamlanan: number;
+  }[];
 }

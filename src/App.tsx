@@ -35,6 +35,7 @@ import CalendarPage from './pages/Calendar';
 import CalculatorPage from './pages/Calculator';
 import ContractGenerator from './pages/ContractGenerator';
 import Payments from './pages/Payments';
+import Login from './pages/Login';
 
 const SidebarItem = ({ icon: Icon, label, to, active, onClick }: {
   icon: any,
@@ -69,25 +70,36 @@ export default function App() {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const savedPass = localStorage.getItem('zema_auth');
+      if (!savedPass) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const [loginRes, notificationsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: 'zema2024' })
+            body: JSON.stringify({ password: savedPass })
           }),
-          fetch(`${API_BASE_URL}/api/notifications`)
+          fetch(`${API_BASE_URL}/api/notifications`, {
+            headers: { 'Authorization': `Bearer ${savedPass}` }
+          })
         ]);
 
         if (loginRes.ok) {
           const data = await loginRes.json();
           setUser(data);
+        } else {
+          localStorage.removeItem('zema_auth');
         }
+        
         if (notificationsRes.ok) {
           setNotifications(await notificationsRes.json());
         }
       } catch (e) {
-        console.error("Initial data fetch failed:", e);
+        console.error("Auth check failed:", e);
       } finally {
         setLoading(false);
       }
@@ -105,6 +117,13 @@ export default function App() {
     return <div className="h-screen w-screen bg-slate-900 flex items-center justify-center">
       <div className="w-12 h-12 border-4 border-logo-gold border-t-transparent rounded-full animate-spin"></div>
     </div>;
+  }
+
+  if (!user && location.pathname !== '/login') {
+    return <Login onLogin={(pass) => {
+      localStorage.setItem('zema_auth', pass);
+      window.location.reload();
+    }} />;
   }
 
   // Fallback user if login failed (to prevent blank screen in dev/offline)

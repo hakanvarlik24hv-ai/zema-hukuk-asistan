@@ -30,14 +30,6 @@ import { API_BASE_URL } from '../config';
 import { cn } from '../lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 
-const chartData = [
-  { name: 'Oca', davalar: 4, tamamlanan: 2 },
-  { name: 'Şub', davalar: 7, tamamlanan: 5 },
-  { name: 'Mar', davalar: 5, tamamlanan: 3 },
-  { name: 'Nis', davalar: 9, tamamlanan: 6 },
-  { name: 'May', davalar: 12, tamamlanan: 8 },
-  { name: 'Haz', davalar: 8, tamamlanan: 9 },
-];
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -185,7 +177,7 @@ export default function Dashboard() {
           </div>
           <div className="h-[300px] lg:h-[350px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={stats?.chartData || []}>
                 <defs>
                   <linearGradient id="colorDavalar" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#c5a059" stopOpacity={0.2} />

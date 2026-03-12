@@ -128,15 +128,24 @@ async function startServer() {
 
   app.use(express.json());
 
-  let currentUser: any = null;
-
   const requireAuth = (req: any, res: any, next: any) => {
-    // If not logged in, but we have a secret "auto-login" header or similar, we could handle it.
-    // For now, if currentUser is null, we check the db for the default user as a fallback
-    // to make it "stay logged in" for this specific use case.
-    if (!currentUser) {
-      currentUser = db.prepare("SELECT * FROM users WHERE email = ?").get("yonetim@zemahukuk.com.tr");
+    const authHeader = req.headers['authorization'];
+    
+    // Fallback for simple admin access during transition/dev
+    const defaultAdmin = db.prepare("SELECT * FROM users WHERE email = ?").get("yonetim@zemahukuk.com.tr");
+    
+    if (authHeader) {
+      // Expecting "Bearer <password>" for now, or similar token
+      const password = authHeader.replace('Bearer ', '');
+      const user = db.prepare("SELECT * FROM users WHERE password = ?").get(password);
+      if (user) {
+        req.user = user;
+        return next();
+      }
     }
+
+    // If no header but we want to allow the default admin for now to prevent total breakage
+    req.user = defaultAdmin;
     next();
   };
 
@@ -146,15 +155,14 @@ async function startServer() {
     const user = db.prepare("SELECT * FROM users WHERE password = ?").get(password);
     if (user) {
       const { password: _, ...userWithoutPassword } = user;
-      currentUser = userWithoutPassword;
-      res.json(currentUser);
+      res.json(userWithoutPassword);
     } else {
       res.status(401).json({ error: "Hatalı şifre." });
     }
   });
 
-  app.post("/api/logout", (req, res) => { currentUser = null; res.json({ success: true }); });
-  app.get("/api/me", (req, res) => res.json(currentUser || null));
+  app.post("/api/logout", (req, res) => { res.json({ success: true }); });
+  app.get("/api/me", requireAuth, (req: any, res) => res.json(req.user || null));
 
   app.get("/api/health", (req, res) => {
     res.json({
@@ -170,8 +178,8 @@ async function startServer() {
     res.json(db.prepare("SELECT * FROM notifications ORDER BY created_at DESC").all());
   });
 
-  app.post("/api/notifications/read-all", requireAuth, (req, res) => {
-    db.prepare("UPDATE notifications SET read = 1 WHERE user_id = ?").run(currentUser.id);
+  app.post("/api/notifications/read-all", requireAuth, (req: any, res) => {
+    db.prepare("UPDATE notifications SET read = 1 WHERE user_id = ?").run(req.user.id);
     res.json({ success: true });
   });
 
@@ -183,6 +191,22 @@ async function startServer() {
       pendingPayments: db.prepare("SELECT COUNT(*) as count FROM payments WHERE status = 'Bekliyor'").get().count,
       totalPendingAmount: db.prepare("SELECT SUM(amount) as total FROM payments WHERE status = 'Bekliyor'").get().total || 0,
     };
+
+    const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+    const now = new Date();
+    const chartData = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthLabel = months[d.getMonth()];
+      const monthStart = d.toISOString().split('T')[0];
+      const nextMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString().split('T')[0];
+      
+      const davalar = db.prepare("SELECT COUNT(*) as count FROM cases WHERE created_at >= ? AND created_at < ?").get(monthStart, nextMonth).count;
+      const tamamlanan = db.prepare("SELECT COUNT(*) as count FROM cases WHERE created_at >= ? AND created_at < ? AND status != 'Aktif'").get(monthStart, nextMonth).count;
+      
+      chartData.push({ name: monthLabel, davalar, tamamlanan });
+    }
 
     const stats = {
       ...counts,
@@ -197,7 +221,8 @@ async function startServer() {
           totalClients: counts.totalClients > 0 ? 'up' : 'neutral',
           pendingPayments: counts.pendingPayments > 0 ? 'down' : 'neutral',
         }
-      }
+      },
+      chartData
     };
     res.json(stats);
   });
@@ -206,9 +231,9 @@ async function startServer() {
     res.json(db.prepare("SELECT * FROM clients").all());
   });
 
-  app.post("/api/clients", requireAuth, (req, res) => {
+  app.post("/api/clients", requireAuth, (req: any, res) => {
     const { name, email, phone } = req.body;
-    const result = db.prepare("INSERT INTO clients (lawyer_id, name, email, phone) VALUES (?, ?, ?, ?)").run(currentUser.id, name, email, phone);
+    const result = db.prepare("INSERT INTO clients (lawyer_id, name, email, phone) VALUES (?, ?, ?, ?)").run(req.user.id, name, email, phone);
     res.json({ id: result.lastInsertRowid });
   });
 

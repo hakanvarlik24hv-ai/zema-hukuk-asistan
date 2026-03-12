@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { Lock, ArrowRight, Building, Scale, ShieldCheck } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
-export default function Login({ onLogin }: { onLogin: () => void }) {
+export default function Login({ onLogin }: { onLogin: (pass: string) => void }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +70,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
                             title="Hukuk Asistanı"
                             desc="Dava dosyaları, müvekkiller ve AI araçlarını yönetin."
                             icon={Scale}
-                            onClick={onLogin}
+                            onClick={() => onLogin(password)}
                             primary
                             delay={0.2}
                         />
