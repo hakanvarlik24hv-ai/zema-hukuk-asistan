@@ -97,7 +97,7 @@ export default function App() {
   }
 
   // Fallback user if login failed (to prevent blank screen in dev/offline)
-  const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ, Av. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
+  const activeUser = user || { id: 1, name: 'Av. Mahmut KORKMAZ\nAv. Zeki FIRAT', email: 'yonetim@zemahukuk.com.tr', role: 'lawyer' };
 
   return (
     <div className="min-h-screen bg-white flex overflow-hidden">
@@ -178,8 +178,8 @@ export default function App() {
               </div>
               {isSidebarOpen && (
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 truncate">{activeUser.name}</p>
-                  <p className="text-[10px] text-slate-500 truncate">{activeUser.email}</p>
+                  <p className="text-sm font-bold text-slate-900 whitespace-pre-line leading-tight">{activeUser.name}</p>
+                  <p className="text-[10px] text-slate-500 truncate mt-0.5">{activeUser.email}</p>
                 </div>
               )}
             </div>
